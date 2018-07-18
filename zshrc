@@ -97,6 +97,8 @@ source $ZSH/oh-my-zsh.sh
 # Autocomplete
 autoload -Uz compinit
 compinit -d "$ZSH_CACHE/zcompdump"
+# setopt globdots  # List hidden files and directories
+
 zstyle ':completion::complete:*' use-cache 1
 zstyle ':completion::complete:*' cache-path $ZSH_CACHE
 
@@ -162,5 +164,15 @@ zstyle -e ':completion:*' hosts 'reply=()'
 
 # Don't complete uninteresting stuff unless we really want to.
 zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec)|TRAP*)'
-zstyle ':completion:*:*:*:users' ignored-patterns '_*'
+zstyle ':completion:*:*:*:users' ignored-patterns \
+		adm amanda apache at avahi avahi-autoipd beaglidx bin cacti canna \
+		clamav daemon dbus distcache dnsmasq dovecot fax ftp games gdm \
+		gkrellmd gopher hacluster haldaemon halt hsqldb ident junkbust kdm \
+		ldap lp mail mailman mailnull man messagebus mldonkey mysql nagios \
+		named netdump news nfsnobody nobody nscd ntp nut nx obsrun openvpn \
+		operator pcap polkitd postfix postgres privoxy pulse pvm quagga radvd \
+		rpc rpcuser rpm rtkit scard shutdown squid sshd statd svn sync tftp \
+		usbmux uucp vcsa wwwrun xfs cron mongodb nullmail portage redis \
+		shoutcast tcpdump '_*'
+
 zstyle ':completion:*' single-ignored show
