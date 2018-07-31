@@ -1,3 +1,6 @@
+" Remove me after first execution
+:!mkdir -p ~/.vim/view
+
 " Set compatibility to Vim only.
 set nocompatible
 
