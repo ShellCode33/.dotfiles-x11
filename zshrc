@@ -176,3 +176,4 @@ zstyle ':completion:*:*:*:users' ignored-patterns \
 		shoutcast tcpdump '_*'
 
 zstyle ':completion:*' single-ignored show
+alias ipa='ip -br -c a'
