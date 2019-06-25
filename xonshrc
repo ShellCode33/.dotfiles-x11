@@ -1,0 +1,28 @@
+$AUTO_CD = '1'
+$AUTO_SUGGEST_IN_COMPLETIONS = '1'
+$IGNOREEOF = '1'
+$XONSH_DATETIME_FORMAT = '%d-%m-%Y %H:%M'
+$XONSH_COLOR_STYLE='fruity'
+$PROJECT_DIRS = ["/home/cfy/Programing"]
+$PROMPT='{env_name}{GREEN}{user}{PURPLE}|{YELLOW}{hostname}{BLUE} {PURPLE}[{BLUE}{cwd}{PURPLE}]{branch_color}{curr_branch: {}}{NO_COLOR} {PURPLE}{prompt_end}{NO_COLOR} '
+xontrib load base16_shell coreutils whole_word_jumping vox vox_tabcomplete avox
+
+# Bye bye curl
+import warnings
+from requests import RequestsDependencyWarning
+warnings.simplefilter('ignore', RequestsDependencyWarning)
+import requests
+get = requests.get
+post = requests.post
+
+# Aliases
+aliases["ll"] = "ls -l"
+aliases["la"] = "ls -la"
+
+def kill_baloo():
+    for $pid in !(pgrep baloo):
+        $pid = $pid.strip()
+        kill -9 $pid
+
+aliases["kbaloo"] = kill_baloo
+aliases["v"] = "vox activate venv"
