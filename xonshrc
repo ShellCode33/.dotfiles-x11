@@ -5,6 +5,7 @@ $XONSH_DATETIME_FORMAT = '%d-%m-%Y %H:%M'
 $XONSH_COLOR_STYLE='fruity'
 $PROJECT_DIRS = ["/home/cfy/Programing"]
 $PROMPT='{env_name}{GREEN}{user}{PURPLE}|{YELLOW}{hostname}{BLUE} {PURPLE}[{BLUE}{cwd}{PURPLE}]{branch_color}{curr_branch: {}}{NO_COLOR} {PURPLE}{prompt_end}{NO_COLOR} '
+$XONSH_SHOW_TRACEBACK = False
 xontrib load base16_shell coreutils whole_word_jumping vox vox_tabcomplete avox
 
 # Bye bye curl
@@ -26,3 +27,6 @@ def kill_baloo():
 
 aliases["kbaloo"] = kill_baloo
 aliases["v"] = "vox activate venv"
+aliases["ipa"] = "ip -br -c a"
+
+${"PAGER"} = "most"
