@@ -1,2 +1,8 @@
-# MyConfigFiles
-Backup of my config files in order to restore easily.
+# dotfiles
+
+Contains :
+- zshrc
+- xonshrc
+- vimrc and plugins
+- xfce config
+- i3 config
