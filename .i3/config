@@ -421,6 +421,7 @@ exec freetube-bin
 exec signal-desktop
 exec riot-desktop
 exec keepassxc
+exec redshift -l geoclue2 -t 5500:3000 -b 1.0:0.8
 
 # Get focus on any opening app
 for_window[class="."] focus
