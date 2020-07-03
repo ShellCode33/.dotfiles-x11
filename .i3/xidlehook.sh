@@ -11,11 +11,11 @@ xidlehook \
   --timer 180 \
     'xrandr --output "$PRIMARY_DISPLAY" --brightness .2' \
     'xrandr --output "$PRIMARY_DISPLAY" --brightness 1' \
-  `# Undim & lock after 60 more seconds` \
-  --timer 60 \
-    'xrandr --output "$PRIMARY_DISPLAY" --brightness 1; i3lock' \
+  `# Undim & lock after 5 more minutes` \
+  --timer 300 \
+    'xrandr --output "$PRIMARY_DISPLAY" --brightness 1; i3exit lock' \
     '' \
-  `# Finally, suspend 60 seconds after it locks` \
+    `# Finally, suspend 60 seconds after it locks (if laptop is on battery)` \
   --timer 60 \
-    'systemctl suspend' \
+    'grep 0 /sys/class/power_supply/AC0/online > /dev/null && systemctl suspend' \
     ''
