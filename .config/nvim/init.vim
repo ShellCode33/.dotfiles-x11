@@ -30,6 +30,10 @@ endif
 
 if !empty(glob(data_dir . '/plugged/coc.nvim'))
     source ~/.config/nvim/coc.vim
+
+		if !executable('ccls')
+				echo "Don't forget to install ccls !"
+		endif
 endif
 
 " Personal tastes
