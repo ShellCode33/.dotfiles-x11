@@ -1,7 +1,8 @@
+" Must have definitions for this init.vim to work
 set nocompatible
 set termguicolors
-set relativenumber
 
+" vim directory where data (autoload, plugins, etc.) are located
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
 
 if empty(glob(data_dir . '/autoload/plug.vim'))
@@ -20,8 +21,6 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Theme plugin
 Plug 'morhetz/gruvbox'
-
-" List ends here. Plugins become visible to Vim after this call.
 call plug#end()
 
 if !empty(glob(data_dir . '/plugged/gruvbox'))
@@ -33,3 +32,6 @@ if !empty(glob(data_dir . '/plugged/coc.nvim'))
     source ~/.config/nvim/coc.vim
 endif
 
+" Personal tastes
+set relativenumber
+set shiftwidth=4
