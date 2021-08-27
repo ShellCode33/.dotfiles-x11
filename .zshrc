@@ -19,6 +19,7 @@ SAVEHIST=5000
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin"
 export EDITOR='nvim'
 export PAGER='most'
+export WORDCHARS='-_'
 export LANG='en_GB.UTF-8'
 eval "$(command dircolors)" # sets LS_COLORS environment variable
 
@@ -65,6 +66,7 @@ bindkey "^[[1;5C"            forward-word
 alias cp="cp -i"
 alias ls='ls --color=auto'
 alias ll='ls -l'
+alias l='ls -lA'
 alias ipa='ip -c -br a'
 alias vim='nvim'
 
