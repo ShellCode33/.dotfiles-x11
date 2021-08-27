@@ -31,11 +31,21 @@ endif
 if !empty(glob(data_dir . '/plugged/coc.nvim'))
     source ~/.config/nvim/coc.vim
 
-		if !executable('ccls')
-				echo "Don't forget to install ccls !"
-		endif
+    if !executable('ccls')
+        echo "Don't forget to install ccls !"
+    endif
+endif
+
+function! Handle_Template()
+    silent! 0r ~/.config/nvim/templates/%:e
+endfunction
+
+if has("autocmd")
+    augroup templates
+        autocmd BufNewFile * call Handle_Template()
+    augroup END
 endif
 
 " Personal tastes
 set relativenumber
-set shiftwidth=4
+set tabstop=4 shiftwidth=4 expandtab
