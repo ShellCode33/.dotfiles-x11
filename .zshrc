@@ -72,6 +72,16 @@ alias ipa='ip -c -br a'
 alias vim='nvim'
 alias gs='git status'
 
+dumb_gen_compile_flags() {
+    local filename="compile_flags.txt"
+    if [ -f "$filename" ]; then
+        echo "$filename already exists"
+    else
+        echo "-std=gnu11" > "$filename"
+        find . -name '*.h' -exec dirname {} \; | uniq | xargs -I {} echo -I{} >> "$filename"
+    fi
+}
+
 # Function that runs before each command
 precmd() {
     local max_path_entries
