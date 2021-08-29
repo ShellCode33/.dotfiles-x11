@@ -4,7 +4,7 @@ set termguicolors
 
 " Personal tastes
 set number relativenumber
-set tabstop=4 shiftwidth=4 expandtab
+set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
 set noshowmode " hide -- INSERT -- from the command line as we have it in the statusline
 
 " vim directory where data (autoload, plugins, etc.) are located
