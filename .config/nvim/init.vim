@@ -18,14 +18,17 @@ endif
 " Plugins will be downloaded under the specified directory.
 call plug#begin(data_dir . '/plugged')
 
-" Syntax highlighting plugin
-Plug 'sheerun/vim-polyglot'
+    " Syntax highlighting plugin
+    Plug 'sheerun/vim-polyglot'
 
-" Completion plugin
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    " Completion plugin
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Theme plugin
-Plug 'morhetz/gruvbox'
+    " File explorer plugin
+    Plug 'preservim/nerdtree'
+
+    " Theme plugin
+    Plug 'morhetz/gruvbox'
 
 call plug#end()
 
@@ -40,6 +43,17 @@ if !empty(glob(data_dir . '/plugged/coc.nvim'))
     else
         echo "Won't source coc.vim, install clang-format first."
     endif
+endif
+
+if !empty(glob(data_dir . '/plugged/nerdtree'))
+    augroup nerdtree
+        autocmd!
+
+        " Start NERDTree when Vim is started without file arguments.
+        autocmd StdinReadPre * let s:std_in=1
+        autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | NERDTree | endif
+
+    augroup END
 endif
 
 function! Handle_Template()
@@ -107,3 +121,6 @@ set statusline+=\ %L\ lines\
 " Current position in the file (percentage)
 set statusline+=%#Cursor#
 set statusline+=\ %3p%%\  
+
+" Custom remaps
+nnoremap <C-t> :NERDTreeToggle<CR>
