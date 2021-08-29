@@ -1,6 +1,8 @@
 " Must have definitions for this init.vim to work
 set nocompatible
 set termguicolors
+
+" Personal tastes
 set number relativenumber
 set tabstop=4 shiftwidth=4 expandtab
 set noshowmode " hide -- INSERT -- from the command line as we have it in the statusline
@@ -33,10 +35,10 @@ if !empty(glob(data_dir . '/plugged/gruvbox'))
 endif
 
 if !empty(glob(data_dir . '/plugged/coc.nvim'))
-    source ~/.config/nvim/coc.vim
-
-    if !executable('ccls')
-        echo "Don't forget to install ccls !"
+    if executable('clang-format')
+        source ~/.config/nvim/coc.vim
+    else
+        echo "Won't source coc.vim, install clang-format first."
     endif
 endif
 
@@ -48,12 +50,21 @@ if has("autocmd")
     augroup templates
         autocmd BufNewFile * call Handle_Template()
     augroup END
+
+    augroup formatting
+        autocmd!
+        if executable('clang-format')
+            autocmd FileType c,cpp setlocal equalprg=clang-format\ --fallback-style=microsoft
+        else
+            echo "Won't map '=' to clang-format, install it first."
+        endif
+    augroup END
 endif
 
-" Custom powerline
+" Utility function to get the current git branch for the statusline
 function! StatuslineGit()
-  let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-  return strlen(l:branchname) > 0 ? l:branchname : ''
+    let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+    return strlen(l:branchname) > 0 ? l:branchname : ''
 endfunction
 
 set statusline=
