@@ -47,5 +47,5 @@ if has("autocmd")
 endif
 
 " Personal tastes
-set relativenumber
+set number relativenumber
 set tabstop=4 shiftwidth=4 expandtab
