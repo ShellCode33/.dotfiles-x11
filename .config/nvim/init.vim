@@ -27,6 +27,9 @@ call plug#begin(data_dir . '/plugged')
     " File explorer plugin
     Plug 'preservim/nerdtree'
 
+    " Files finder
+    Plug 'junegunn/fzf.vim'
+
     " Theme plugin
     Plug 'morhetz/gruvbox'
 
@@ -124,3 +127,4 @@ set statusline+=\ %3p%%\
 
 " Custom remaps
 nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <expr> <C-f> (len(system('git rev-parse')) ? ':Files' : ':GFiles')."\<cr>"
