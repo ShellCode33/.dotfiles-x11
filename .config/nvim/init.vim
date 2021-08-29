@@ -24,6 +24,9 @@ call plug#begin(data_dir . '/plugged')
     " Completion plugin
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+    " Git integration plugin
+    Plug 'tpope/vim-fugitive'
+
     " File explorer plugin
     Plug 'preservim/nerdtree'
 
