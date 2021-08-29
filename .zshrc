@@ -70,6 +70,7 @@ alias ll='ls -l'
 alias l='ls -lA'
 alias ipa='ip -c -br a'
 alias vim='nvim'
+alias gs='git status'
 
 # Function that runs before each command
 precmd() {
