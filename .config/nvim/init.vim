@@ -3,6 +3,7 @@ set nocompatible
 set termguicolors
 set number relativenumber
 set tabstop=4 shiftwidth=4 expandtab
+set noshowmode " hide -- INSERT -- from the command line as we have it in the statusline
 
 " vim directory where data (autoload, plugins, etc.) are located
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
