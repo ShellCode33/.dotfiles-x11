@@ -6,6 +6,8 @@ set termguicolors
 set number relativenumber
 set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
 set noshowmode " hide -- INSERT -- from the command line as we have it in the statusline
+set scrolloff=999
+set colorcolumn=88
 
 " vim directory where data (autoload, plugins, etc.) are located
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
@@ -34,7 +36,7 @@ call plug#begin(data_dir . '/plugged')
     Plug 'junegunn/fzf.vim'
 
     " Theme plugin
-    Plug 'morhetz/gruvbox'
+    Plug 'gruvbox-community/gruvbox'
 
 call plug#end()
 
@@ -68,6 +70,7 @@ endfunction
 
 if has("autocmd")
     augroup templates
+        autocmd!
         autocmd BufNewFile * call Handle_Template()
     augroup END
 
@@ -128,6 +131,31 @@ set statusline+=\ %L\ lines\
 set statusline+=%#Cursor#
 set statusline+=\ %3p%%\  
 
+" Set <leader> key to space
+let mapleader = " "
+
 " Custom remaps
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <expr> <C-f> (len(system('git rev-parse')) ? ':Files' : ':GFiles')."\<cr>"
+
+" Undo breakpoints
+inoremap , ,<C-g>u
+inoremap ? ?<C-g>u
+inoremap ! !<C-g>u
+inoremap - -<C-g>u
+inoremap ; ;<C-g>u
+inoremap : :<C-g>u
+inoremap ( (<C-g>u
+inoremap ) )<C-g>u
+inoremap [ [<C-g>u
+inoremap ] ]<C-g>u
+inoremap { {<C-g>u
+inoremap } }<C-g>u
+
+" Moving text
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+inoremap <C-j> <esc>:m .+1<CR>==i
+inoremap <C-k> <esc>:m .-2<CR>==i
+nnoremap <leader>j :m .+1<CR>==
+nnoremap <leader>k :m .-2<CR>==
