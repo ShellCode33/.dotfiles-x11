@@ -1,15 +1,10 @@
 {
-    "coc.preferences.formatOnSaveFiletypes": [
-        "c",
-        "cpp"
-    ],
-
     "coc.preferences.currentFunctionSymbolAutoUpdate": true,
 
     "languageserver": {
         "clangd": {
             "command": "clangd",
-            "args": [],
+            "args": ["--fallback-style=microsoft"],
             "rootPatterns": ["compile_flags.txt", "compile_commands.json"],
             "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"]
         }
