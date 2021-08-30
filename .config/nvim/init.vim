@@ -33,6 +33,7 @@ call plug#begin(data_dir . '/plugged')
     Plug 'preservim/nerdtree'
 
     " Files finder
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
     Plug 'junegunn/fzf.vim'
 
     " Theme plugin
@@ -46,11 +47,7 @@ if !empty(glob(data_dir . '/plugged/gruvbox'))
 endif
 
 if !empty(glob(data_dir . '/plugged/coc.nvim'))
-    if executable('clang-format')
-        source ~/.config/nvim/coc.vim
-    else
-        echo "Won't source coc.vim, install clang-format first."
-    endif
+    source ~/.config/nvim/coc.vim
 endif
 
 if !empty(glob(data_dir . '/plugged/nerdtree'))
@@ -73,21 +70,18 @@ if has("autocmd")
         autocmd!
         autocmd BufNewFile * call Handle_Template()
     augroup END
-
-    augroup formatting
-        autocmd!
-        if executable('clang-format')
-            autocmd FileType c,cpp setlocal equalprg=clang-format\ --fallback-style=microsoft
-        else
-            echo "Won't map '=' to clang-format, install it first."
-        endif
-    augroup END
 endif
 
 " Utility function to get the current git branch for the statusline
 function! StatuslineGit()
     let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-    return strlen(l:branchname) > 0 ? l:branchname : ''
+    return empty(l:branchname) ? '' : "\ua0" . l:branchname . "\ua0"
+endfunction
+
+" Utility function to get function name the cursor is in
+function! CocCurrentFunction()
+    let l:current_function = get(b:, 'coc_current_function', '')
+    return empty(l:current_function) ? '' : "\ua0" . l:current_function . "\ua0"
 endfunction
 
 set statusline=
@@ -107,13 +101,17 @@ set statusline+=%{&paste?'\ PASTE\ ':''}
 set statusline+=%{&spell?'\ SPELL\ ':''}
 
 " Short filename
-set statusline+=%#Cursor#
 set statusline+=%#CursorLine#
 set statusline+=\ %t\  
 
+if !empty(glob(data_dir . '/plugged/coc.nvim'))
+    set statusline+=%#CursorIM#
+    set statusline+=%{CocCurrentFunction()}
+endif
+
 " Git branch
 set statusline+=%#DiffChange#
-set statusline+=\ %{StatuslineGit()}\  
+set statusline+=%{StatuslineGit()}
 set statusline+=%#CursorLine#
 
 " Right corner of the status bar
