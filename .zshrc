@@ -23,6 +23,9 @@ export WORDCHARS='-_'
 export LANG='en_GB.UTF-8'
 eval "$(command dircolors)" # sets LS_COLORS environment variable
 
+# Share history between sessions
+setopt inc_append_history
+
 # Enable menu selection for basically everything
 zstyle ':completion:*' menu select
 
