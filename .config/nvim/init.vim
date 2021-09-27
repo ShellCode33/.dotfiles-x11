@@ -9,6 +9,9 @@ set noshowmode " hide -- INSERT -- from the command line as we have it in the st
 set scrolloff=999
 set colorcolumn=88
 
+" Set <leader> key to space
+let mapleader = " "
+
 " vim directory where data (autoload, plugins, etc.) are located
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
 
@@ -17,6 +20,16 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+" CoC will automatically install those extensions if they're missing
+let g:coc_global_extensions = [
+\   'coc-json',
+\   'coc-pyright',
+\   'coc-html',
+\   'coc-yaml',
+\   'coc-highlight',
+\   'coc-clangd',
+\ ]
+
 " Plugins will be downloaded under the specified directory.
 call plug#begin(data_dir . '/plugged')
 
@@ -24,7 +37,7 @@ call plug#begin(data_dir . '/plugged')
     Plug 'sheerun/vim-polyglot'
 
     " Completion plugin
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': { -> coc#util#install() } }
 
     " Git integration plugin
     Plug 'tpope/vim-fugitive'
@@ -65,12 +78,10 @@ function! Handle_Template()
     silent! 0r ~/.config/nvim/templates/%:e
 endfunction
 
-if has("autocmd")
-    augroup templates
-        autocmd!
-        autocmd BufNewFile * call Handle_Template()
-    augroup END
-endif
+augroup templates
+    autocmd!
+    autocmd BufNewFile * call Handle_Template()
+augroup END
 
 " Utility function to get the current git branch for the statusline
 function! StatuslineGit()
@@ -128,9 +139,6 @@ set statusline+=\ %L\ lines\
 " Current position in the file (percentage)
 set statusline+=%#Cursor#
 set statusline+=\ %3p%%\  
-
-" Set <leader> key to space
-let mapleader = " "
 
 " Custom remaps
 nnoremap <C-t> :NERDTreeToggle<CR>
