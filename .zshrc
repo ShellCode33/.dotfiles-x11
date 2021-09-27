@@ -77,12 +77,35 @@ alias gs='git status'
 
 dumb_gen_compile_flags() {
     local filename="compile_flags.txt"
+
     if [ -f "$filename" ]; then
         echo "$filename already exists"
-    else
-        echo "-std=gnu11" > "$filename"
-        find . -name '*.h' -exec dirname {} \; | uniq | xargs -I {} echo -I{} >> "$filename"
+        return
     fi
+
+    echo -n "Generation in progress... "
+
+    echo "-std=gnu11" > "$filename"
+
+    find -type f ! -path '*/linux-*' -name '*.h' -exec dirname {} \; | uniq | xargs -I {} echo -I{} >> "$filename"
+
+    cflags=()
+
+    while IFS= read -r -d '' file; do
+        IFS=' ' read -r -A preprocessor_variables <<< "$(unifdef -s "$file" 2> /dev/null| sort -u | grep -vE '_H_?$' | grep -vE '^__' | xargs)"
+        if [ ! -z "$preprocessor_variables" ]
+        then
+            cflags+=("${preprocessor_variables[@]}")
+        fi
+    done< <(find -type f ! -path '*/linux-*' -name '*.c' -print0)
+
+    if [ ! -z "$cflags" ]
+    then
+        IFS=' ' read -r -A unique_cflags <<< "$(printf -- "%s\n" "${cflags[@]}" | sort -u | xargs)"
+        printf -- "-D%s\n" "${unique_cflags[@]}" >> "$filename"
+    fi
+
+    echo "done"
 }
 
 # Function that runs before each command
