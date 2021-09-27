@@ -41,6 +41,7 @@ call plug#begin(data_dir . '/plugged')
 
     " Git integration plugin
     Plug 'tpope/vim-fugitive'
+    Plug 'rbong/vim-flog'
 
     " File explorer plugin
     Plug 'preservim/nerdtree'
@@ -111,9 +112,9 @@ set statusline+=%#DiffAdd#
 set statusline+=%{&paste?'\ PASTE\ ':''}
 set statusline+=%{&spell?'\ SPELL\ ':''}
 
-" Short filename
+" Filename
 set statusline+=%#CursorLine#
-set statusline+=\ %t\  
+set statusline+=\ %F\  
 
 if !empty(glob(data_dir . '/plugged/coc.nvim'))
     set statusline+=%#CursorIM#
