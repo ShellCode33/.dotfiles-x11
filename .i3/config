@@ -416,12 +416,11 @@ bindsym $mod+Control+l exec i3exit lock
 exec --no-startup-id i3-msg 'workspace $ws1; exec terminal'
 exec --no-startup-id i3-msg 'workspace $ws1; exec terminal'
 exec firefox
-exec jetbrains-toolbox
-exec freetube-bin
 exec signal-desktop
-exec riot-desktop
+exec element-desktop
 exec keepassxc
-exec redshift -l geoclue2 -t 5500:3000 -b 1.0:0.8
+exec redshift -l geoclue2 -t 5500:3000 -b 1.0:0.6
+exec flameshot
 
 # Get focus on any opening app
 for_window[class="."] focus
