@@ -28,6 +28,8 @@ let g:coc_global_extensions = [
 \   'coc-yaml',
 \   'coc-highlight',
 \   'coc-clangd',
+\   'coc-cmake',
+\   'coc-sh',
 \ ]
 
 " Plugins will be downloaded under the specified directory.
