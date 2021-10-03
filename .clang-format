@@ -57,6 +57,9 @@ SpacesInContainerLiterals: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 
+BinPackArguments: false
+BinPackParameters: false
+
 # Really don't want that to happen, set it to a high value
 PenaltyBreakAssignment: 50000
 PenaltyReturnTypeOnItsOwnLine: 50000
