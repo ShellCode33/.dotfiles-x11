@@ -8,6 +8,9 @@ set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
 set noshowmode " hide -- INSERT -- from the command line as we have it in the statusline
 set scrolloff=999
 set colorcolumn=88
+set foldnestmax=1
+set foldminlines=20
+set foldmethod=indent
 
 " Set <leader> key to space
 let mapleader = " "
