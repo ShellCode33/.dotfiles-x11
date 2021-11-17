@@ -161,6 +161,10 @@ inoremap ] ]<C-g>u
 inoremap { {<C-g>u
 inoremap } }<C-g>u
 
+" Keep selection when indenting
+vnoremap < <gv
+vnoremap > >gv
+
 " Moving text
 vnoremap <C-j> :m '>+1<CR>gv=gv
 vnoremap <C-k> :m '<-2<CR>gv=gv
