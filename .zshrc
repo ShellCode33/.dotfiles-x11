@@ -18,6 +18,7 @@ SAVEHIST=5000
 # Environment variables
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin"
 export EDITOR='nvim'
+export MANPAGER='nvim +Man!'
 export PAGER='most'
 export WORDCHARS='-_'
 export LANG='en_GB.UTF-8'
