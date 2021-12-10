@@ -75,40 +75,7 @@ alias l='ls -lA'
 alias ipa='ip -c -br a'
 alias vim='nvim'
 alias gs='git status'
-
-dumb_gen_compile_flags() {
-    local filename="compile_flags.txt"
-
-    if [ -f "$filename" ]; then
-        echo "$filename already exists"
-        return
-    fi
-
-    echo -n "Generation in progress... "
-
-    echo "-std=gnu11" > "$filename"
-
-    find -type f ! -path '*/linux-*' -name '*.h' -exec dirname {} \; | uniq | xargs -I {} echo -I{} >> "$filename"
-
-    cflags=()
-
-    while IFS= read -r -d '' file; do
-        IFS=' ' read -r -A preprocessor_variables <<< "$(unifdef -s "$file" 2> /dev/null| sort -u | grep -vE '_H_?$' | grep -vE '^__' | xargs)"
-        if [ ! -z "$preprocessor_variables" ]
-        then
-            cflags+=("${preprocessor_variables[@]}")
-        fi
-    done< <(find -type f ! -path '*/linux-*' -name '*.c' -print0)
-
-    if [ ! -z "$cflags" ]
-    then
-        IFS=' ' read -r -A unique_cflags <<< "$(printf -- "%s\n" "${cflags[@]}" | sort -u | xargs)"
-        printf -- "-D%s\n" "${unique_cflags[@]}" >> "$filename"
-    fi
-
-    echo "done"
-}
-
+alias gd='git difftool -x "nvim -d"'
 # Function that runs before each command
 precmd() {
     local max_path_entries
@@ -132,6 +99,9 @@ do
         echo "You must install '$requirement' for this .zshrc to work properly !"
     fi
 done
+
+# Vim key bindings in ZSH
+source ~/.dotfiles/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
 # Clean temp variables
 unset requirements
