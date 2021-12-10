@@ -66,17 +66,6 @@ if !empty(glob(data_dir . '/plugged/coc.nvim'))
     source ~/.config/nvim/coc.vim
 endif
 
-if !empty(glob(data_dir . '/plugged/nerdtree'))
-    augroup nerdtree
-        autocmd!
-
-        " Start NERDTree when Vim is started without file arguments.
-        autocmd StdinReadPre * let s:std_in=1
-        autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | NERDTree | endif
-
-    augroup END
-endif
-
 function! Handle_Template()
     silent! 0r ~/.config/nvim/templates/%:e
 endfunction
@@ -145,7 +134,7 @@ set statusline+=\ %3p%%\
 
 " Custom remaps
 nnoremap <C-t> :NERDTreeToggle<CR>
-nnoremap <expr> <C-f> (len(system('git rev-parse')) ? ':Files' : ':GFiles')."\<cr>"
+nnoremap <C-f> :Files<CR>
 
 " Undo breakpoints
 inoremap , ,<C-g>u
