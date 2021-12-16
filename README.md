@@ -1,8 +1,7 @@
-# dotfiles
+# My dotfiles repo
 
-Contains :
-- zshrc
-- xonshrc
-- vimrc and plugins
-- xfce config
-- i3 config
+To setup everything on a new machine run :
+
+```
+$ curl github.com/raw/setup.sh | sudo bash -
+```
