@@ -1,6 +1,13 @@
 #!/bin/bash
 set -x
 
+#
+# NOTE : to run this script automatically when a HDMI device is plugged in, add the
+#        following line to /lib/udev/rules.d/99-hdmi_sound.rules
+#
+#        ACTION=="change", SUBSYSTEM=="drm", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/USERNAME/.Xauthority", RUN+="/path/to/hdmi_auto_switch.sh"
+#
+
 export DISPLAY=:0
 export XDG_RUNTIME_DIR=/run/user/$(id -u "$USER")
 
