@@ -101,7 +101,10 @@ do
 done
 
 # Vim key bindings in ZSH
-source ~/.dotfiles/zsh-vi-mode/zsh-vi-mode.plugin.zsh
+source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
+
+# ZSH syntax highlighting
+source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 
 # Clean temp variables
 unset requirements
