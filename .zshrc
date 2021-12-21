@@ -1,6 +1,8 @@
 # Load command completion plugin
 autoload -Uz compinit
+zmodload zsh/complist
 compinit
+_comp_options+=(globdots) # Process hidden files as well
 
 # VCS plugin that enables branch name extracting from git repositories
 autoload -Uz vcs_info
@@ -27,7 +29,7 @@ eval "$(command dircolors)" # sets LS_COLORS environment variable
 # Share history between sessions
 setopt inc_append_history
 
-# Enable menu selection for basically everything
+# Autotab complete configuration
 zstyle ':completion:*' menu select
 
 # Group completions by type (files, builtins, commands, etc.)
@@ -57,25 +59,17 @@ zstyle ':completion:*:manuals.(^1*)' insert-sections true
 # Custom vcs_info formatting (branch name only)
 zstyle ':vcs_info:git:*' formats " %{[33m%}[%b]%{[0m%}"
 
-# Key bindings (man terminfo)
-bindkey "${terminfo[kdch1]}" delete-char
-bindkey "${terminfo[khome]}" beginning-of-line
-bindkey "${terminfo[kend]}"  end-of-line
-bindkey "${terminfo[kcuu1]}" history-beginning-search-backward-end
-bindkey "${terminfo[kcud1]}" history-beginning-search-forward-end
-bindkey "^[[1;5D"            backward-word
-bindkey "^[[1;5C"            forward-word
+# Checking requirements to make sure this zshrc is usable
+requirements=(nvim fzf lf)
 
-# Aliases
-alias cp="cp -i"
-alias grep='grep --color=auto'
-alias ls='ls --color=auto'
-alias ll='ls -l'
-alias l='ls -lA'
-alias ipa='ip -c -br a'
-alias vim='nvim'
-alias gs='git status'
-alias gd='git difftool -x "nvim -d"'
+for requirement in "${requirements[@]}"
+do
+    if ! loc="$(type -p "$requirement")" || [[ -z "$loc" ]]
+    then
+        echo "You must install '$requirement' for this .zshrc to work properly !"
+    fi
+done
+
 # Function that runs before each command
 precmd() {
     local max_path_entries
@@ -89,22 +83,54 @@ precmd() {
     PROMPT="%{[34m%}%n%{[35m%}@%{[33m%}%M %B%F%{[36m%}%${max_path_entries}~%f%b${vcs_info_msg_0_} $ "
 }
 
-# Checking requirements to make sure this zshrc is usable
-requirements=(nvim most)
-
-for requirement in "${requirements[@]}"
-do
-    if ! loc="$(type -p "$requirement")" || [[ -z "$loc" ]]
-    then
-        echo "You must install '$requirement' for this .zshrc to work properly !"
+# Function that run lf and cd into the last visited directory
+lfcd () {
+    tmp="$(mktemp)"
+    lf -last-dir-path="$tmp" "$@"
+    if [ -f "$tmp" ]; then
+        dir="$(cat "$tmp")"
+        rm -f "$tmp" >/dev/null
+        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
     fi
-done
+}
 
 # Vim key bindings in ZSH
+ZVM_INIT_MODE=sourcing
 source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
 # ZSH syntax highlighting
 source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+
+# Key bindings (man terminfo)
+bindkey "${terminfo[kdch1]}" delete-char
+bindkey "${terminfo[khome]}" beginning-of-line
+bindkey "${terminfo[kend]}"  end-of-line
+bindkey "${terminfo[kcuu1]}" history-beginning-search-backward-end
+bindkey "${terminfo[kcud1]}" history-beginning-search-forward-end
+bindkey "^[[1;5D"            backward-word
+bindkey "^[[1;5C"            forward-word
+
+# Key bindings (tab completion)
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 'k' vi-up-line-or-history
+bindkey -M menuselect 'l' vi-forward-char
+bindkey -M menuselect 'j' vi-down-line-or-history
+
+# Key bindings (external tools)
+bindkey -s '^f' 'cd "$(dirname "$(fzf)")"\n'
+bindkey -s '^o' 'lfcd\n' # see lfcd function declaration above
+
+# Aliases
+alias cp="cp -i"
+alias grep='grep --color=auto'
+alias ls='ls --color=auto'
+alias ll='ls -l'
+alias l='ls -lA'
+alias ipa='ip -c -br a'
+alias vim='nvim'
+alias gs='git status'
+alias gd='git difftool -x "nvim -d"'
+alias xo='xdg-open'
 
 # Clean temp variables
 unset requirements
