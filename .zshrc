@@ -17,8 +17,8 @@ zle -N history-beginning-search-forward-end history-search-end
 
 # ZSH history settings
 HISTFILE=~/.zsh_history
-HISTSIZE=1000
-SAVEHIST=5000
+HISTSIZE=10000000
+SAVEHIST=10000000
 
 # Environment variables
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin"
