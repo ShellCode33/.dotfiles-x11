@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+# Take a screenshot of the screen and blur it
+import -silent -window root jpeg:- | convert - -scale 20% -blur 0x2.5 -resize 500% /tmp/lock.png
+
+# Lock session using that blurred screenshot
+i3lock -i /tmp/lock.png -e $@
+
+exit 0
