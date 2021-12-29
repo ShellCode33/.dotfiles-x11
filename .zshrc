@@ -4,6 +4,9 @@ zmodload zsh/complist
 compinit
 _comp_options+=(globdots) # Process hidden files as well
 
+# Load colors names for a more readable PROMPT variable
+autoload -U colors && colors
+
 # VCS plugin that enables branch name extracting from git repositories
 autoload -Uz vcs_info
 
@@ -80,7 +83,7 @@ precmd() {
         max_path_entries=3
     fi
 
-    PROMPT="%{[34m%}%n%{[35m%}@%{[33m%}%M %B%F%{[36m%}%${max_path_entries}~%f%b${vcs_info_msg_0_} $ "
+    PROMPT="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%${max_path_entries}~%{$fg[red]%}]%b${vcs_info_msg_0_} $ "
 }
 
 # Function that wraps the git command in order to use nvim when possible
