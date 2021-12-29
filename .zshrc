@@ -91,6 +91,8 @@ git() {
         then
             nvim /tmp/git.$$
         fi
+
+        rm /tmp/git.$$
     else
         command git "$@"
     fi
