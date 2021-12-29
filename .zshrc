@@ -83,8 +83,21 @@ precmd() {
     PROMPT="%{[34m%}%n%{[35m%}@%{[33m%}%M %B%F%{[36m%}%${max_path_entries}~%f%b${vcs_info_msg_0_} $ "
 }
 
+# Function that wraps the git command in order to use nvim when possible
+git() {
+    if [[ "$1" = "show" ]] || [[ "$1" = "log" ]]
+    then
+        if command git "$@" > /tmp/git.$$
+        then
+            nvim /tmp/git.$$
+        fi
+    else
+        command git "$@"
+    fi
+}
+
 # Function that run lf and cd into the last visited directory
-lfcd () {
+lfcd() {
     tmp="$(mktemp)"
     lf -last-dir-path="$tmp" "$@"
     if [ -f "$tmp" ]; then
