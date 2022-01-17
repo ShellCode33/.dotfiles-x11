@@ -88,7 +88,7 @@ precmd() {
 
 # Function that wraps the git command in order to use nvim when possible
 git() {
-    if [[ "$1" = "show" ]] || [[ "$1" = "log" ]]
+    if [[ "$1" = "show" ]] || [[ "$1" = "log" ]] || [[ "$1" = "diff" ]]
     then
         if command git "$@" > /tmp/git.$$
         then
@@ -147,7 +147,6 @@ alias l='ls -lA'
 alias ipa='ip -c -br a'
 alias vim='nvim'
 alias gs='git status'
-alias gd='git difftool -x "nvim -d"'
 alias xo='xdg-open'
 
 # Clean temp variables
