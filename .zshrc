@@ -16,7 +16,7 @@ zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 
 # ZSH history settings
-HISTFILE=~/.zsh_history
+HISTFILE=~/.cache/zsh_history
 HISTSIZE=10000000
 SAVEHIST=10000000
 
@@ -110,6 +110,19 @@ lfcd() {
         rm -f "$tmp" >/dev/null
         [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
     fi
+}
+
+rootme() {
+    if [ "$#" -eq 2 ]
+    then
+        sshpass -p"$(echo "$2" | cut -d@ -f1)" ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -p "$1" "$2"
+    elif [ "$#" -eq 3 ]
+    then
+        sshpass -p"$(echo "$2" | cut -d@ -f1)" scp -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -P "$1" "$2":"$3" .
+    else
+        echo "Usage: rootme [PORT] [USER@HOST] (FILE)"
+    fi
+
 }
 
 # Vim key bindings in ZSH
