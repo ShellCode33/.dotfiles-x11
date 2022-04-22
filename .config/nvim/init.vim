@@ -75,6 +75,15 @@ augroup templates
     autocmd BufNewFile * call Handle_Template()
 augroup END
 
+augroup commenting_blocks_of_code
+  autocmd!
+  autocmd FileType c,h,cpp,java,scala let b:comment_leader = '// '
+  autocmd FileType sh,ruby,python     let b:comment_leader = '# '
+  autocmd FileType conf,fstab         let b:comment_leader = '# '
+  autocmd FileType tex                let b:comment_leader = '% '
+  autocmd FileType vim                let b:comment_leader = '" '
+augroup END
+
 " Utility function to get the current git branch for the statusline
 function! StatuslineGit()
     let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
@@ -161,3 +170,7 @@ inoremap <C-j> <esc>:m .+1<CR>==i
 inoremap <C-k> <esc>:m .-2<CR>==i
 nnoremap <C-j> :m .+1<CR>==
 nnoremap <C-k> :m .-2<CR>==
+
+" Comment code, see augroup commenting_blocks_of_code above
+noremap <silent> <leader>cc :<C-B>silent <C-E>s/^/<C-R>=escape(b:comment_leader,'\/')<CR>/<CR>:nohlsearch<CR>
+noremap <silent> <leader>cu :<C-B>silent <C-E>s/^\V<C-R>=escape(b:comment_leader,'\/')<CR>//e<CR>:nohlsearch<CR>
