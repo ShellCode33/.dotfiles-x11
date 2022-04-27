@@ -411,7 +411,7 @@ exec firefox
 exec signal-desktop
 exec element-desktop
 exec keepassxc
-exec redshift -l geoclue2 -t 5500:3000 -b 1.0:0.6
+exec redshift
 exec flameshot
 
 # Get focus on any opening app
