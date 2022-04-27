@@ -5,7 +5,8 @@ Description=Firefox profile memory cache
 WantedBy=default.target
 
 [Service]
-Type=oneshot
 RemainAfterExit=yes
+Restart=always
+RestartSec=1800s
 ExecStart=%h/.local/bin/firefox-sync.sh %i
 ExecStop=%h/.local/bin/firefox-sync.sh %i
