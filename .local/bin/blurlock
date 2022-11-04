@@ -1,5 +1,9 @@
 #!/bin/sh
-set -eu
+
+export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/"$(id -u)"/bus"
+
+# Lock KeepassXC databases
+dbus-send --print-reply --session --dest=org.keepassxc.KeePassXC.MainWindow --print-reply /keepassxc org.keepassxc.MainWindow.lockAllDatabases
 
 # Take a screenshot of the screen and blur it
 import -silent -window root jpeg:- | convert - -scale 20% -blur 0x2.5 -resize 500% /tmp/lock.png
