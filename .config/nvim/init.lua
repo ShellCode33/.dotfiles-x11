@@ -8,12 +8,12 @@ require("plugins")
 require("settings.lsp")
 require("settings.completion")
 
--- setup treesitter
-require("settings.treesitter")
-
 -- setup plugins
-require("settings.plugins.telescope")
+require("settings.plugins.treesitter")
 require("settings.plugins.gruvbox")
+require("settings.plugins.nvim-tree")
+require("settings.plugins.telescope")
+require("settings.plugins.lualine")
 
 -- keymappings
 require("remaps")

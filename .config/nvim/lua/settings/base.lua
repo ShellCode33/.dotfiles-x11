@@ -1,6 +1,9 @@
 -- True color support
 vim.opt.termguicolors = true
 
+-- Hide mode in command prompt
+vim.opt.showmode = false
+
 -- Line numbering
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -13,6 +16,7 @@ vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
+vim.opt.smartindent = true
 
 -- Set leader key to space
 vim.g.mapleader = " "
