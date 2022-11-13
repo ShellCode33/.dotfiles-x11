@@ -21,7 +21,7 @@ HISTSIZE=10000000
 SAVEHIST=10000000
 
 # Environment variables
-export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin"
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:$HOME/.local/bin"
 export EDITOR='nvim'
 export MANPAGER='nvim +Man!'
 export PAGER='most'
@@ -125,12 +125,13 @@ rootme() {
 
 }
 
-# Vim key bindings in ZSH
-ZVM_INIT_MODE=sourcing
-source /usr/share/zsh/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh
-
-# ZSH syntax highlighting
-source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+# Tell the line editor to turn on "application" mode when it starts and turn it off when it stops.
+# This should make the use of khome, kend, kcuu1 and kcud1 portable across terminal emulators.
+# See https://zsh.sourceforge.io/FAQ/zshfaq03.html#l26
+function zle-line-init () { echoti smkx }
+function zle-line-finish () { echoti rmkx }
+zle -N zle-line-init
+zle -N zle-line-finish
 
 # Key bindings (man terminfo)
 bindkey "${terminfo[kdch1]}" delete-char
@@ -161,6 +162,7 @@ alias ipa='ip -c -br a'
 alias vim='nvim'
 alias gs='git status'
 alias xo='xdg-open'
+alias pandoc='sudo docker run --rm -v "$(pwd):/data" -u $(id -u):$(id -g) pandoc/latex'
 
 # Clean temp variables
 unset requirements
