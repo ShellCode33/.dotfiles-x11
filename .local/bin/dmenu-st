@@ -1,0 +1,213 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+import os
+import re
+import fileinput
+import subprocess
+from dataclasses import dataclass
+from urllib.parse import urlparse
+from typing import List
+
+
+URL_REGEX = r"[a-z-]+://[^\s\(\)\[\]\"'\\]+"
+
+# Unfortunaly I didn't find a way to find PS1 dynamically
+# If command extraction doesn't work properly, this is probably because of this.
+PS1_BEGIN = f'[{os.environ["USER"]}@'.encode()
+
+
+class DmenuBridgeException(Exception):
+    pass
+
+
+@dataclass(frozen=True)
+class CommandOutput:
+    command: str
+    output: bytes
+    run_as_root: bool
+
+
+def notify(title: str, content: str = ""):
+    subprocess.run(
+        ["notify-send", title, content]
+    )
+
+def dmenu(choices: List[str], prompt: str = "") -> str:
+    try:
+        choice = subprocess.check_output(
+            ["dmenu", "-i", "-l", "10", "-p", prompt],
+            input="\n".join(choices).encode()
+        )
+        return choice[:-1].decode()
+    except subprocess.CalledProcessError:
+        return ""
+
+def pick_url_from_input() -> str:
+    urls = []
+
+    for line in fileinput.input(encoding="utf-8"):
+        line = line.replace("\\n", " ").replace("\\t", " ")
+        matches = re.findall(URL_REGEX, line)
+
+        for match in matches:
+            try:
+                urlparse(match)
+
+                if match not in urls:
+                    urls.insert(0, match) # last urls will be seen first
+            except ValueError:
+                pass
+
+    if not urls:
+        raise DmenuBridgeException("No URL found")
+
+    return dmenu(urls)
+
+def handle_open_url():
+    url = pick_url_from_input()
+
+    if not url:
+        return
+
+    proc = subprocess.Popen(
+        ["xdg-open", url],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+
+    try:
+        if proc.wait(timeout=1) != 0:
+            raise DmenuBridgeException("Couldn't open URL")
+    except subprocess.TimeoutExpired:
+        pass
+
+    notify("✨ URL opened !")
+
+def handle_copy_url():
+    url = pick_url_from_input()
+
+    if not url:
+        return
+
+    try:
+        subprocess.run(
+            ["xclip", "-selection", "clipboard"],
+            input=url.encode(),
+            check=True
+        )
+
+        notify("✨ URL copied to clipboard !")
+    except subprocess.CalledProcessError:
+        raise DmenuBridgeException("Couldn't copy URL")
+
+def pick_command_from_input() -> CommandOutput:
+    commands = []
+
+    current_command = None
+    current_output = b""
+    run_as_root = False
+
+    for line in fileinput.input(mode="rb"):
+        if line.startswith(PS1_BEGIN):
+
+            if current_command and current_output:
+                commands.append(CommandOutput(current_command, current_output, run_as_root))
+
+            dollar_pos = line.find(b"$")
+            hash_pos = line.find(b"#")
+
+            if hash_pos == -1:
+                end_prompt = dollar_pos
+                run_as_root = False
+            elif dollar_pos == -1:
+                end_prompt = hash_pos
+                run_as_root = True
+            elif dollar_pos < hash_pos:
+                end_prompt = dollar_pos
+                run_as_root = False
+            else:
+                end_prompt = hash_pos
+                run_as_root = True
+
+            if end_prompt == -1:
+                raise DmenuBridgeException("Couldn't find end of prompt based on PS1")
+
+            current_command = line[end_prompt + 1:].decode().strip()
+            current_output = b""
+
+        else:
+            current_output += line
+
+    if current_command and current_output:
+        commands.append(CommandOutput(current_command, current_output, run_as_root))
+
+    if not commands:
+        raise DmenuBridgeException("Couldn't find any command with an output")
+
+    choice = dmenu([f"[{i}] {'#' if cmd.run_as_root else '$'} {cmd.command}" for i, cmd in enumerate(commands)])
+
+    end_index = choice.find("]")
+    cmd_index = int(choice[1:end_index])
+    return commands[cmd_index]
+
+def handle_copy_command_output():
+    cmd = pick_command_from_input()
+
+    try:
+        subprocess.run(
+            ["xclip", "-selection", "clipboard"],
+            input=cmd.output,
+            check=True
+        )
+
+        notify("✨ Command output copied to clipboard !")
+    except subprocess.CalledProcessError:
+        raise DmenuBridgeException("Couldn't copy URL")
+
+def handle_open_command_output():
+    cmd = pick_command_from_input()
+    filename = f"/tmp/cmd.{os.getpid()}.out"
+
+    with open(filename, "wb") as file:
+        file.write(cmd.output)
+
+    proc = subprocess.Popen(
+        ["st", "nvim", filename],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+
+    try:
+        if proc.wait(timeout=1) != 0:
+            raise DmenuBridgeException("Couldn't open URL")
+    except subprocess.TimeoutExpired:
+        pass
+
+    notify("✨ Command output opened in editor !")
+
+operations = {
+    "Open URL": handle_open_url,
+    "Copy URL": handle_copy_url,
+    "Copy command output": handle_copy_command_output,
+    "Edit command output": handle_open_command_output,
+}
+
+def main():
+    operation = dmenu(list(operations), prompt="What do you want to do ?")
+
+    if not operation:
+        return
+
+    try:
+        operations[operation]()
+    except DmenuBridgeException as dbe:
+        notify(f"❌ {dbe}")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as exc:
+        # Catch all exception and send a notification because dmenu-bridge does
+        # not aim to be run in a terminal, therefore its output will be hidden.
+        notify(str(exc))
