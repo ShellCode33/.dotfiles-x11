@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+import os
+import subprocess
+from typing import List
+
+class DmenuBridgeException(Exception):
+    pass
+
+def notify(title: str, content: str = ""):
+    subprocess.run(
+        ["notify-send", title, content],
+        check=True,
+    )
+
+def dmenu(choices: List[str], prompt: str = "") -> str:
+    try:
+        choice = subprocess.check_output(
+            ["dmenu", "-i", "-l", "10", "-p", prompt],
+            input="\n".join(choices).encode()
+        )
+        return choice[:-1].decode()
+    except subprocess.CalledProcessError:
+        return ""
+
+def insert_emoji():
+
+    try:
+        with open(f"{os.environ['HOME']}/.local/share/emoji", "r") as file:
+            emoji_file_content = file.read()
+    except FileNotFoundError:
+        raise DmenuBridgeException("Couldn't find emoji file")
+
+    choice = dmenu(emoji_file_content.split("\n"))
+
+    subprocess.run(
+        ["xdotool", "type", choice[0]],
+        check=True,
+    )
+
+operations = {
+    "Insert Emoji": insert_emoji,
+}
+
+def main():
+    operation = dmenu(list(operations), prompt="What do you want to do ?")
+
+    if not operation:
+        return
+
+    try:
+        operations[operation]()
+    except DmenuBridgeException as dbe:
+        notify(f"❌ {dbe}")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as exc:
+        # Catch all exception and send a notification because dmenu-bridge does
+        # not aim to be run in a terminal, therefore its output will be hidden.
+        notify(str(exc))
