@@ -30,7 +30,8 @@ class CommandOutput:
 
 def notify(title: str, content: str = ""):
     subprocess.run(
-        ["notify-send", title, content]
+        ["notify-send", title, content],
+        check=True,
     )
 
 def dmenu(choices: List[str], prompt: str = "") -> str:
