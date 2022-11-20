@@ -14,6 +14,7 @@ require("settings.plugins.gruvbox")
 require("settings.plugins.nvim-tree")
 require("settings.plugins.telescope")
 require("settings.plugins.lualine")
+require("settings.plugins.nvim-colorizer")
 
 -- keymappings
 require("remaps")

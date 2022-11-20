@@ -57,6 +57,9 @@ return require('packer').startup(function(use)
         tag = 'nightly'
     }
 
+    -- color codes and names highlighting
+    use 'NvChad/nvim-colorizer.lua'
+
     -- Theme
     use 'ellisonleao/gruvbox.nvim'
 
