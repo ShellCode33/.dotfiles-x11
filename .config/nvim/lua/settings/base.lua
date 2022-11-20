@@ -1,6 +1,12 @@
 -- True color support
 vim.opt.termguicolors = true
 
+-- Dynamically update window title
+vim.opt.title = true
+
+-- Keep the cursor centered
+vim.opt.scrolloff = 999
+
 -- Hide mode in command prompt
 vim.opt.showmode = false
 
