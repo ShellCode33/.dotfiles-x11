@@ -37,7 +37,13 @@ def notify(title: str, content: str = ""):
 def dmenu(choices: List[str], prompt: str = "") -> str:
     try:
         choice = subprocess.check_output(
-            ["dmenu", "-i", "-l", "10", "-p", prompt],
+            ["dmenu",
+             "-fn", "monospace:size=10",
+             "-nb", "#222222",
+             "-nf", "#444444",
+             "-sb", "#8b0000",
+             "-sf", "#eeeeee",
+             "-i", "-l", "10", "-p", prompt],
             input="\n".join(choices).encode()
         )
         return choice[:-1].decode()
