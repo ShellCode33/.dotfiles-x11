@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+import os
+import requests
+import subprocess
+from os.path import exists
+from typing import List
+
+EMOJI_URL = "https://raw.githubusercontent.com/googlefonts/emoji-metadata/main/emoji_14_0_ordering.json"
+EMOJI_FILE = f"{os.environ['HOME']}/.local/share/emoji"
+
+class DmenuBridgeException(Exception):
+    pass
+
+def notify(title: str, content: str = ""):
+    subprocess.run(
+        ["notify-send", title, content],
+        check=True,
+    )
+
+def dmenu(choices: List[str], prompt: str = "") -> str:
+    try:
+        choice = subprocess.check_output(
+            ["dmenu", "-i", "-l", "10", "-p", prompt],
+            input="\n".join(choices).encode()
+        )
+        return choice[:-1].decode()
+    except subprocess.CalledProcessError:
+        return ""
+
+def download_emoji():
+    resp = requests.get(EMOJI_URL)
+
+    with open(EMOJI_FILE, "w") as file:
+        for entry in resp.json():
+            group = entry["group"]
+
+            if group in {"Flags"}:
+                print(f"Skipping {group} category as they are not well supported")
+                continue
+
+            print(f"Processing group {group}...")
+
+            for emoji in entry["emoji"]:
+
+                # Skip "complex" emoji as they are not well supported by many tools (such as dmenu)
+                if len(emoji["base"]) > 2:
+                    continue
+
+                emoji_raw = chr(emoji["base"][0])
+                shortcodes = " ".join(emoji["shortcodes"])
+                file.write(f"{emoji_raw} {shortcodes}\n")
+
+def insert_emoji():
+
+    try:
+        with open(EMOJI_FILE, "r") as file:
+            emoji_file_content = file.read()
+    except FileNotFoundError:
+        raise DmenuBridgeException("Couldn't find emoji file")
+
+    choice = dmenu(emoji_file_content.split("\n"))
+
+    subprocess.run(
+        ["xdotool", "type", choice[0]],
+        check=True,
+    )
+
+if __name__ == "__main__":
+
+    try:
+        if not exists(EMOJI_FILE):
+            download_emoji()
+
+        insert_emoji()
+    except DmenuBridgeException as dbe:
+        notify(f"❌ {dbe}")
+    except Exception as exc:
+        # Catch all exception and send a notification because dmenu-bridge does
+        # not aim to be run in a terminal, therefore its output will be hidden.
+        notify(str(exc))
+
