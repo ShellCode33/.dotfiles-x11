@@ -62,10 +62,11 @@ def insert_emoji():
 
     choice = dmenu(emoji_file_content.split("\n"))
 
-    subprocess.run(
-        ["xdotool", "type", choice[0]],
-        check=True,
-    )
+    if choice:
+        subprocess.run(
+            ["xdotool", "type", choice[0]],
+            check=True,
+        )
 
 if __name__ == "__main__":
 
