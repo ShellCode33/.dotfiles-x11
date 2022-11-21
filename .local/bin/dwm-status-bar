@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+from typing import Tuple
+import psutil
+import subprocess
+from time import sleep
+from datetime import datetime
+
+UPDATE_INTERVAL = 5 # in seconds
+
+_last_upload_counter = 0
+_last_download_counter = 0
+
+def widget_datetime():
+    return datetime.now().strftime("%d/%m/%y %H:%M")
+
+def widget_resources():
+    cpu_usage_percent  = int(psutil.cpu_percent())
+    ram_usage_percent = int(psutil.virtual_memory().percent)
+    return f"CPU: {cpu_usage_percent}% RAM: {ram_usage_percent}% ⚙"
+
+def widget_volume():
+    sinks_in_use = []
+    sinks_current_volume = []
+
+    sinks = subprocess.check_output(["pactl", "list", "short"]).decode()
+
+    for sink in sinks.split("\n"):
+        if "RUNNING" in sink:
+            sink_id = sink.split()[0]
+            sinks_in_use.append(sink_id)
+
+    for sink_in_use in sinks_in_use:
+        sink_config = subprocess.check_output(["pactl", "get-sink-volume", sink_in_use])
+        sink_config = sink_config.decode()
+        end = sink_config.find("%")
+        begin = end
+
+        while sink_config[begin] != " ":
+            begin -= 1
+
+        sinks_current_volume.append(sink_config[begin:end+1])
+
+    return " - ".join(sinks_current_volume) + " 🔊"
+
+def widget_battery():
+    
+    with open("/sys/class/power_supply/BAT0/capacity", "r") as file:
+        battery_status = file.read().strip()
+
+    with open("/sys/class/power_supply/AC0/online", "r") as file:
+        plugged = bool(int(file.read().strip()))
+
+    return f"{battery_status}% {'🔌' if plugged else '🔋'}"
+
+def _get_default_route() -> Tuple[str, str]:
+    ip = ""
+    iface = ""
+
+    routes = subprocess.check_output(["ip", "route"]).decode()
+    
+    for route in routes.split("\n"):
+        if route.startswith("default"):
+            begin = route.find("via")
+            
+            if begin == -1:
+                raise Exception(f"Couln't parse route: {route}")
+
+            begin += 4
+            end = route.find("dev")
+
+            if end == -1:
+                raise Exception(f"Couln't parse route: {route}")
+
+            ip = route[begin:end].strip()
+
+            begin = end + 4
+            end = route.find("proto")
+
+            if end == -1:
+                raise Exception(f"Couln't parse route: {route}")
+
+            iface = route[begin:end].strip()
+
+    return ip, iface
+
+def _get_network_speed() -> Tuple[str, str]:
+
+    if _last_download_counter == 0 or _last_upload_counter == 0:
+        return "0 b/s", "0 b/s"
+
+    counters = psutil.net_io_counters()
+
+    return "", ""
+
+def widget_network():
+    ip, iface = _get_default_route()
+    download_speed, upload_speed = _get_network_speed()
+
+    return f"{ip} ({iface}) {download_speed} ⬇  {upload_speed} ⬆ " 
+
+def widget_mail():
+    return "1337 📬"
+
+def widget_updates():
+    upgradable_packages = subprocess.check_output(["yay", "-Qu"]).decode()
+
+    if upgradable_packages[-1] == "\n":
+        upgradable_packages = upgradable_packages[:-1]
+
+    upgradable_packages_count = len(upgradable_packages.split("\n"))
+    return f"{upgradable_packages_count} 🐛"
+
+
+def update_bar(status: str):
+    subprocess.run(["xprop", "-root", "-set", "WM_NAME", status])
+
+def main():
+    widgets = {
+        widget_resources: "kill id",
+        widget_network: "kill id",
+        widget_mail: "kill id",
+        widget_updates: "kill id",
+        widget_volume: "kill id",
+        widget_datetime: "kill id",
+        widget_battery: "kill id",
+    }
+
+    while True:
+        statuses = map(lambda f: f(), widgets)
+        update_bar(" | ".join(statuses))
+        sleep(UPDATE_INTERVAL)
+
+if __name__ == "__main__":
+    main()
