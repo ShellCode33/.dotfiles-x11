@@ -136,10 +136,14 @@ def widget_mail():
     return "1337 📬"
 
 def widget_updates():
-    upgradable_packages = subprocess.check_output(["yay", "-Qu"]).decode()
-
-    if upgradable_packages[-1] == "\n":
-        upgradable_packages = upgradable_packages[:-1]
+    if exists("/usr/bin/yay"):
+        upgradable_packages = subprocess.check_output(["/usr/bin/yay", "-Qu"]).decode().strip()
+    elif exists("/usr/bin/pacman"):
+        upgradable_packages = subprocess.check_output(["/usr/bin/pacman", "-Qu"]).decode().strip()
+    elif exists("/usr/bin/apt"):
+        upgradable_packages = subprocess.check_output(["/usr/bin/apt", "list", "--upgradable"]).decode().strip()
+    else:
+        raise FileNotFoundError("Couldn't find any package manager")
 
     upgradable_packages_count = len(upgradable_packages.split("\n"))
     return f"{upgradable_packages_count} 🐛"
