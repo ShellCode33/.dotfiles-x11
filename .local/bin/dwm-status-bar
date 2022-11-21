@@ -62,26 +62,25 @@ def _get_default_route() -> Tuple[str, str]:
     
     for route in routes.split("\n"):
         if route.startswith("default"):
-            begin = route.find("via")
+            begin = route.find("dev")
+            end = route.find("proto")
             
-            if begin == -1:
+            if begin == -1 or end == -1:
                 raise Exception(f"Couln't parse route: {route}")
 
             begin += 4
-            end = route.find("dev")
-
-            if end == -1:
-                raise Exception(f"Couln't parse route: {route}")
-
-            ip = route[begin:end].strip()
-
-            begin = end + 4
-            end = route.find("proto")
-
-            if end == -1:
-                raise Exception(f"Couln't parse route: {route}")
 
             iface = route[begin:end].strip()
+
+            begin = route.find("src")
+            end = route.find("metric")
+
+            if begin == -1 or end == -1:
+                raise Exception(f"Couln't parse route: {route}")
+
+            begin += 4
+
+            ip = route[begin:end].strip()
 
     return ip, iface
 
