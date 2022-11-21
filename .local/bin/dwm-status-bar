@@ -28,28 +28,25 @@ def widget_resources():
     return f"CPU: {cpu_usage_percent}% RAM: {ram_usage_percent}% ⚙"
 
 def widget_volume():
-    sinks_in_use = []
-    sinks_current_volume = []
+    default_sink = subprocess.check_output(["pactl", "get-default-sink"])
+    default_sink = default_sink.decode().strip()
 
-    sinks = subprocess.check_output(["pactl", "list", "short"]).decode()
+    sink_config = subprocess.check_output(["pactl", "get-sink-volume", default_sink])
+    sink_config = sink_config.decode()
+    begin = sink_config.find("/")
+    
+    if begin == -1:
+        raise ValueError(f"Couln't parse sink config: {sink_config}")
 
-    for sink in sinks.split("\n"):
-        if "RUNNING" in sink:
-            sink_id = sink.split()[0]
-            sinks_in_use.append(sink_id)
+    begin += 2
+    end = sink_config.find(" ", begin)
+    
+    if end == -1:
+        raise ValueError(f"Couln't parse sink config: {sink_config}")
 
-    for sink_in_use in sinks_in_use:
-        sink_config = subprocess.check_output(["pactl", "get-sink-volume", sink_in_use])
-        sink_config = sink_config.decode()
-        end = sink_config.find("%")
-        begin = end
+    current_volume = sink_config[begin:end]
 
-        while sink_config[begin] != " ":
-            begin -= 1
-
-        sinks_current_volume.append(sink_config[begin:end+1])
-
-    return " - ".join(sinks_current_volume) + " 🔊"
+    return f"{current_volume} 🔊"
 
 def widget_battery():
     
