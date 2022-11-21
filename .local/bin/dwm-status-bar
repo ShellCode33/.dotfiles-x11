@@ -12,6 +12,12 @@ UPDATE_INTERVAL = 5 # in seconds
 _last_upload_counter = 0
 _last_download_counter = 0
 
+def notify(title: str, content: str = ""):
+    subprocess.run(
+        ["notify-send", title, content],
+        check=True,
+    )
+
 def widget_datetime():
     return datetime.now().strftime("%d/%m/%y %H:%M")
 
@@ -63,24 +69,26 @@ def _get_default_route() -> Tuple[str, str]:
     for route in routes.split("\n"):
         if route.startswith("default"):
             begin = route.find("dev")
-            end = route.find("proto")
             
-            if begin == -1 or end == -1:
-                raise Exception(f"Couln't parse route: {route}")
+            if begin == -1:
+                raise ValueError(f"Couln't parse route: {route}")
 
             begin += 4
+            end = route.find(" ", begin)
+            
+            if end == -1:
+                raise ValueError(f"Couln't parse route: {route}")
 
             iface = route[begin:end].strip()
+            break
 
-            begin = route.find("src")
-            end = route.find("metric")
+    iface_config = subprocess.check_output(["ip", "-brief", "address", "show", iface])
+    iface_config = iface_config.decode().split()
 
-            if begin == -1 or end == -1:
-                raise Exception(f"Couln't parse route: {route}")
-
-            begin += 4
-
-            ip = route[begin:end].strip()
+    if iface_config[1] != "UP":
+        ip = iface_config[1]
+    else:
+        ip = iface_config[2].split("/")[0]
 
     return ip, iface
 
@@ -127,8 +135,12 @@ def main():
     }
 
     while True:
-        statuses = map(lambda f: f(), widgets)
-        update_bar(" | ".join(statuses))
+        try:
+            statuses = map(lambda f: f(), widgets)
+            update_bar(" | ".join(statuses))
+        except Exception as exc:
+            notify(f"❌ {exc}")
+
         sleep(UPDATE_INTERVAL)
 
 if __name__ == "__main__":
