@@ -6,6 +6,7 @@ import psutil
 import subprocess
 from time import sleep
 from datetime import datetime
+from os.path import exists
 
 UPDATE_INTERVAL = 5 # in seconds
 
@@ -55,7 +56,12 @@ def widget_battery():
     with open("/sys/class/power_supply/BAT0/capacity", "r") as file:
         battery_status = file.read().strip()
 
-    with open("/sys/class/power_supply/AC0/online", "r") as file:
+    plugged_filename = "/sys/class/power_supply/AC0/online"
+
+    if not exists(plugged_filename):
+        plugged_filename = "/sys/class/power_supply/AC/online"
+
+    with open(plugged_filename, "r") as file:
         plugged = bool(int(file.read().strip()))
 
     return f"{battery_status}% {'🔌' if plugged else '🔋'}"
