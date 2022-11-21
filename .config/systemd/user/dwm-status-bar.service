@@ -1,0 +1,12 @@
+[Unit]
+Description=DWM Status Bar Updater
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+Restart=always
+Environment=DISPLAY=:0
+ExecStart=%h/.local/bin/dwm-status-bar
+
+[Install]
+WantedBy=default.target
