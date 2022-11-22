@@ -103,7 +103,13 @@ def _get_default_route() -> Tuple[str, str]:
             iface = route[begin:end].strip()
             break
 
-    iface_config = subprocess.check_output(["ip", "-brief", "address", "show", iface])
+    if iface:
+        iface_config = subprocess.check_output(["ip", "-brief", "address", "show", iface])
+    else:
+        iface_config = subprocess.check_output(["ip", "-brief", "address", "show"])
+        iface_config = iface_config.split(b"\n")[1]
+        iface = iface_config.split()[0].decode()
+
     iface_config = iface_config.decode().split()
 
     if iface_config[1] != "UP":
